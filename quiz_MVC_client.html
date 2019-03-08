@@ -6,7 +6,7 @@
 
     // MODEL
 
-const initial_quizzes = JSON.stringify([ 
+const initial_quizzes = JSON.stringify([
         { question: "Capital of Italy",    answer: "Rome" },
         { question: "Capital of France",   answer: "Paris" },
         { question: "Capital of Spain",    answer: "Madrid" },
@@ -15,9 +15,13 @@ const initial_quizzes = JSON.stringify([
 
 localStorage.quizzes = localStorage.quizzes || initial_quizzes;
 
-    // VIEWs
+    // VIEWs: generan codigo HTML que se inserta en el metodo html()  de  jQuery  en  el  bloque <div  id=“main”><div>
+    //Funciones JavaScript que insertan parametros recibidos en el codigo HTML que devuelven
+    //
 
-const index = (quizzes) => quizzes.reduce((ac, quiz, id) => 
+//La renderiza indexController(), recibe  el  array con todos los quizzes como parámetro y genera la lista HTML
+//de las preguntas de los quizzes con los botones asociados de Edit y Delete, además de los botones New_Quiz y Rest_Quizzes al final
+const index = (quizzes) => quizzes.reduce((ac, quiz, id) =>
     ac +=`<div><span class="play"   quizid="${id}">${quiz.question}</span>
              <button class="edit"   quizid="${id}">Edit</button>
              <button class="delete" quizid="${id}">Delete</button>
@@ -27,6 +31,8 @@ const index = (quizzes) => quizzes.reduce((ac, quiz, id) =>
   + `<button class="new">  New Quiz</button>
      <button class="reset">Reset Quizzes</button>`;
 
+//Vista de un formulario con un quiz que renderiza playController(id),
+//la respuesta se envia al darle a check, que genera el evento check.
 const play = (id, question) =>
 `   ${question}:
     <p>
@@ -38,7 +44,8 @@ const play = (id, question) =>
     </p>
     <button class="index">Go back</button>
 `;
-
+//Renderizar formulario de edicion de quizzes en editController()
+//que debe reusarse para crear quizzes en newController()
 const quizForm = (msg, event, id, question, answer) =>
 `   ${msg}:
     <p>
@@ -51,16 +58,24 @@ const quizForm = (msg, event, id, question, answer) =>
 
    // CONTROLLERs
 
+//Renderiza la lista de los quizzes, junto con los botones para editar,
+//borrar, crear y resetear. Regenera el array a partir del almacenado en
+//formato JSON en localStorage.quizzes y renderizar la vista index(quizzes)
+//con los quizzes guardados.
 const indexController = () => {
     let quizzes = JSON.parse(localStorage.quizzes);
     $('#main').html(index(quizzes));
 };
 
+//Renderiza  el  formulario  para  jugar  con  el  quiz,  identificado  por id,
+//al  ocurrir  el evento play (clicar en el texto del quiz)
 const playController = (id) => {
     let { question } = JSON.parse(localStorage.quizzes)[id];
     $('#main').html(play(id, question));
 };
 
+//Comprueba  si  la  respuesta  enviada  es  correcta  al  ocurrir  el  evento
+//check(clicar en el botón Check)
 const checkController = (id) => {
     let {question, answer } = JSON.parse(localStorage.quizzes)[id];
     let my_answer = $('#answer').val();
@@ -70,11 +85,16 @@ const checkController = (id) => {
     $('#msg').html(response);
 };
 
+//Renderiza  el  formulario  de  edición  de  un  quiz  al  ocurrir  el  evento edit  (clicar  el botón  Edit),
+//inicializando  los  cajetines  del  formulario  con  la  pregunta  y  la  respuesta  del  quiz identificado por id.
 const editController = (id) => {
     let {question, answer} = JSON.parse(localStorage.quizzes)[id];
     $('#main').html(quizForm('Edit Quiz', 'update', id, question, answer));
 };
 
+//Actualiza  el  modelo  con  las  nuevas  pregunta  y  respuesta  tecleadas  en  el quiz  identificado  por id,
+//  al  ocurrir  el  evento update(clicar  el  botón  update  en  vista  quizForm).
+//Finaliza renderizando la vista index
 const updateController = (id) => {
     let quizzes = JSON.parse(localStorage.quizzes);
     quizzes[id].question = $('#question').val();
@@ -83,18 +103,34 @@ const updateController = (id) => {
     indexController();
 };
 
+//Renderizar  el  formulario  de  creación  de  un  quiz  (vista quizForm(msg, event,  id,  question,  answer)).
+// Se  invoca  al  ocurrir  el  evento new  (clicar  el  botón  New_Quiz).
+//El parámetro id  se  puede  inicializar  a  0  o  a  cualquier  valor,
+//porque  no  se  utiliza  en  la  creación  de quizzes.
+//Los  parámetros  question  y  answer  deberán  llevar  el  string  vacío  (“”)  para  que  al renderizar
+//los cajetines del formulario se muestren vacíos
 const newController = () => {
     // ..... introducir código
 };
 
+//Actualizar  el  modelo  introduciendo  el  nuevo  quiz  al  final  del  array  de quizzes.
+//Se  invoca  al  ocurrir  el  evento create  (clicar  el  botón  create),
+//al  ocurrir  el  evento update(clicar el botón create en vista quizForm).
+//Debe finalizar renderizando la vista index
 const createController = () => {
     // ..... introducir código
 };
 
+//Actualizar  el  modelo  eliminando  el  quiz  identificado  for id  del  array  de quizzes.
+//Se  invoca  al  ocurrir  el  evento delete  (clicar  el  botón  Delete).
+//Antes  de  eliminarlo  debe pedir confirmación con el método confirm() de JavaScript de cliente,
+//que genera un pop-up. Debe finalizar renderizando la vista index
 const deleteController = (id) => {
     // ..... introducir código
 };
 
+//Actualizar  el  modelo  con  los  quizzes  iniciales,  guardados  en  la  constante initial_quizzes.
+//Debe finalizar renderizando la vista index
 const resetController = (id) => {
     // ..... introducir código
 };
