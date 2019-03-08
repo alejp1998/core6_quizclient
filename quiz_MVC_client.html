@@ -6,6 +6,8 @@
 
     // MODEL
 
+//Array objetos guardado en propiedad quizzes de localStorage del navegador
+//donde ejecutamos la app
 const initial_quizzes = JSON.stringify([
         { question: "Capital of Italy",    answer: "Rome" },
         { question: "Capital of France",   answer: "Paris" },
@@ -138,14 +140,29 @@ const resetController = (id) => {
 
    // ROUTER
 
+//Asocia manejadores a eventos, de forma que su concurrencia invoque el controlador asociados
+//El navegador se asocia al evento click sobre cualquier elemento HTML de document(pagina mostrada)
+//el segundo parametro filtra los que pertenezccan a la clasex
+//Convenio MVC -> Nombre clase y primera parte del controlador son el mismo
+//El parámetro id se extrae del atributo quizId del objeto asociado al evento clicado
 const eventsController = ()=> {
   $(document).on('click','.index',  () => indexController());
   $(document).on('click','.play',   (e)=> playController(Number($(e.target).attr("quizid"))));
   $(document).on('click','.check',  (e)=> checkController(Number($(e.target).attr("quizid"))));
   $(document).on('click','.edit',   (e)=> editController(Number($(e.target).attr("quizid"))));
   $(document).on('click','.update', (e)=> updateController(Number($(e.target).attr("quizid"))));
-
-    // ..... añadir manejadores de eventos new, create, delete y reset
+  $(document).on('new','.new',  () => {
+    //Controlador evento new
+  });
+  $(document).on('create','.create',  () => {
+    //Controlador evento create
+  });
+  $(document).on('delete','.delete',  () => {
+    //Controlador evento delete
+  });
+  $(document).on('reset','.reset',  () => {
+    //Controlador evento reset
+  });
 }
 
 
