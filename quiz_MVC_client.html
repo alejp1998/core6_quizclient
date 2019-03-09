@@ -1,6 +1,7 @@
 
 <html>
-<head><title>MVC Example</title><meta charset="utf-8"></head>
+<link href="StyleSheet.css" rel="stylesheet" type="text/css">
+<head><title>MVC Example</title></head>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js" > </script>
 <script type="text/javascript">
 
@@ -16,11 +17,9 @@ const initial_quizzes = JSON.stringify([
     ]);
 
 localStorage.quizzes = localStorage.quizzes || initial_quizzes;
-
     // VIEWs: generan codigo HTML que se inserta en el metodo html()  de  jQuery  en  el  bloque <div  id=“main”><div>
     //Funciones JavaScript que insertan parametros recibidos en el codigo HTML que devuelven
     //
-
 //La renderiza indexController(), recibe  el  array con todos los quizzes como parámetro y genera la lista HTML
 //de las preguntas de los quizzes con los botones asociados de Edit y Delete, además de los botones New_Quiz y Rest_Quizzes al final
 const index = (quizzes) => quizzes.reduce((ac, quiz, id) =>
@@ -31,7 +30,8 @@ const index = (quizzes) => quizzes.reduce((ac, quiz, id) =>
         ""
     )
   + `<button class="new">  New Quiz</button>
-     <button class="reset">Reset Quizzes</button>`;
+     <button class="reset">Reset Quizzes</button>
+     <button class="playAll"> Play All Quizzes</button>`;
 
 //Vista de un formulario con un quiz que renderiza playController(id),
 //la respuesta se envia al darle a check, que genera el evento check.
@@ -43,6 +43,19 @@ const play = (id, question) =>
         <p>
             <div id='msg'></div>
         </p>
+    </p>
+    <button class="index">Go back</button>
+`;
+
+const playAll = (id, question,score) =>
+`<p>
+    You have ${score} points
+</p>`
++
+`   ${question}:
+    <p>
+        <input  type="text" id="answer" placeholder="Answer" >
+        <button class="checkAll" quizid="${id}">Check</button>
     </p>
     <button class="index">Go back</button>
 `;
@@ -82,9 +95,9 @@ const checkController = (id) => {
     let {question, answer } = JSON.parse(localStorage.quizzes)[id];
     let my_answer = $('#answer').val();
     let response = (my_answer===answer) ?
-          `Yes, "${my_answer}" is the ${question}`
-        : `No, "${my_answer}" is not the ${question}`;
-    $('#msg').html(response);
+        `Yes, "${my_answer}" is the ${question}`
+      : `No, "${my_answer}" is not the ${question}`;
+    $('#msg').html(response);//Sustituye por response el innerHTML del elemento msg
 };
 
 //Renderiza  el  formulario  de  edición  de  un  quiz  al  ocurrir  el  evento edit  (clicar  el botón  Edit),
@@ -112,7 +125,7 @@ const updateController = (id) => {
 //Los  parámetros  question  y  answer  deberán  llevar  el  string  vacío  (“”)  para  que  al renderizar
 //los cajetines del formulario se muestren vacíos
 const newController = () => {
-    // ..... introducir código
+    $('#main').html(quizForm('New Quiz', 'create',0, "", ""));
 };
 
 //Actualizar  el  modelo  introduciendo  el  nuevo  quiz  al  final  del  array  de quizzes.
@@ -120,7 +133,10 @@ const newController = () => {
 //al  ocurrir  el  evento update(clicar el botón create en vista quizForm).
 //Debe finalizar renderizando la vista index
 const createController = () => {
-    // ..... introducir código
+  let quizzes = JSON.parse(localStorage.quizzes);
+  quizzes.push({question: $('#question').val(), answer: $('#answer').val()});
+  localStorage.quizzes = JSON.stringify(quizzes);
+  indexController();
 };
 
 //Actualizar  el  modelo  eliminando  el  quiz  identificado  for id  del  array  de quizzes.
@@ -128,14 +144,68 @@ const createController = () => {
 //Antes  de  eliminarlo  debe pedir confirmación con el método confirm() de JavaScript de cliente,
 //que genera un pop-up. Debe finalizar renderizando la vista index
 const deleteController = (id) => {
-    // ..... introducir código
+    let quizzes = JSON.parse(localStorage.quizzes);
+    let r = confirm("Do you really want to delete this quiz?");
+    if (r){
+      quizzes.splice(id,1);
+    }
+    localStorage.quizzes = JSON.stringify(quizzes);
+    indexController();
 };
 
 //Actualizar  el  modelo  con  los  quizzes  iniciales,  guardados  en  la  constante initial_quizzes.
 //Debe finalizar renderizando la vista index
-const resetController = (id) => {
-    // ..... introducir código
+const resetController = () => {
+    let r = confirm("Do you really want to lose all your quizzes?");
+    if (r) {
+      localStorage.quizzes = initial_quizzes;
+    }
+    indexController();
 };
+
+const playAllController = () => {
+  let playQuizzes = JSON.parse(localStorage.quizzes);
+  let score = 0;
+  let questionId = Math.floor(Math.random()*(playQuizzes.length));
+  let { question } = playQuizzes[questionId];
+  $(document).on('click','.checkAll',  (e)=> {
+    checkAllController(questionId);
+  });
+  $('#main').html(playAll(questionId,question,score));
+
+  const checkAllController = (id) => {
+      let {question, answer} = playQuizzes[id];
+      let my_answer = $('#answer').val();
+      let response = (my_answer===answer) ?
+            `Correct`
+          : `Incorrect`;
+      if(response == "Correct" && playQuizzes.length == 1){
+        score++;
+        let r = confirm("CONGRATULATIONS,you won with "+score+" points, wanna play again?");
+        if(r){
+          playAllController();
+        }else{
+          indexController();
+        }
+      }else if(response == "Correct"){
+        playQuizzes.splice(id,1);
+        score++;
+        questionId = Math.floor(Math.random()*(playQuizzes.length));
+        let { question } = playQuizzes[questionId];
+        $('#main').html(response+playAll(questionId,question,score));
+
+      }else{
+        score = 0;
+        let r = confirm("GAME OVER. Do you want to try again?");
+        if(r){
+          playAllController();
+        }else{
+          indexController();
+        }
+      }
+  };
+
+}
 
 
    // ROUTER
@@ -151,17 +221,20 @@ const eventsController = ()=> {
   $(document).on('click','.check',  (e)=> checkController(Number($(e.target).attr("quizid"))));
   $(document).on('click','.edit',   (e)=> editController(Number($(e.target).attr("quizid"))));
   $(document).on('click','.update', (e)=> updateController(Number($(e.target).attr("quizid"))));
-  $(document).on('new','.new',  () => {
-    //Controlador evento new
+  $(document).on('click','.new',  () => {
+    newController();
   });
-  $(document).on('create','.create',  () => {
-    //Controlador evento create
+  $(document).on('click','.create',  () => {
+    createController();
   });
-  $(document).on('delete','.delete',  () => {
-    //Controlador evento delete
+  $(document).on('click','.delete',  (e) => {
+    deleteController(Number($(e.target).attr("quizid")));
   });
-  $(document).on('reset','.reset',  () => {
-    //Controlador evento reset
+  $(document).on('click','.reset',  () => {
+    resetController();
+  });
+  $(document).on('click','.playAll',  () => {
+    playAllController();
   });
 }
 

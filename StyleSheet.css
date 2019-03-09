@@ -1,0 +1,42 @@
+/*CSS Document*/
+*{
+   font-family: Arial !important;
+   font-size: calc(1vw);
+}
+h1{
+  font-size: calc(2vw);
+  color: #15CFC0;
+}
+#main{
+  color: #832BEE;
+}
+.edit{
+  background-color: #14AC5E;
+  border-style: solid;
+}
+.delete{
+  background-color: #F1154B;
+  border-style: solid;
+}
+.new{
+  background-color: #37BA35;
+  border-style: solid;
+}
+.reset{
+  background-color: #BBBFC1;
+  border-style: solid;
+}
+.playAll{
+  background-color: #6F5CDD;
+  border-style: solid;
+}
+.create,.update,.check{
+  background-color: #E6732B;
+  border-style: solid;
+}
+#question{
+  color: #293BC6;
+}
+#answer{
+  color: blue;
+}
