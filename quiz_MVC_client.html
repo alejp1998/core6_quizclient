@@ -94,7 +94,7 @@ const playController = (id) => {
 const checkController = (id) => {
     let {question, answer } = JSON.parse(localStorage.quizzes)[id];
     let my_answer = $('#answer').val();
-    let response = (my_answer===answer) ?
+    let response = (my_answer.toLowerCase()===answer.toLowerCase()) ?
         `Yes, "${my_answer}" is the ${question}`
       : `No, "${my_answer}" is not the ${question}`;
     $('#msg').html(response);//Sustituye por response el innerHTML del elemento msg
@@ -176,7 +176,7 @@ const playAllController = () => {
   const checkAllController = (id) => {
       let {question, answer} = playQuizzes[id];
       let my_answer = $('#answer').val();
-      let response = (my_answer===answer) ?
+      let response = (my_answer.toLowerCase()===answer.toLowerCase()) ?
             `Correct`
           : `Incorrect`;
       if(response == "Correct" && playQuizzes.length == 1){
@@ -204,7 +204,6 @@ const playAllController = () => {
         }
       }
   };
-
 }
 
 
