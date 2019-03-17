@@ -1,12 +1,9 @@
-
 <html>
 <link href="StyleSheet.css" rel="stylesheet" type="text/css">
 <head><title>MVC Example</title></head>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js" > </script>
 <script type="text/javascript">
-
     // MODEL
-
 //Array objetos guardado en propiedad quizzes de localStorage del navegador
 //donde ejecutamos la app
 const initial_quizzes = JSON.stringify([
@@ -15,7 +12,6 @@ const initial_quizzes = JSON.stringify([
         { question: "Capital of Spain",    answer: "Madrid" },
         { question: "Capital of Portugal", answer: "Lisbon" }
     ]);
-
 localStorage.quizzes = localStorage.quizzes || initial_quizzes;
     // VIEWs: generan codigo HTML que se inserta en el metodo html()  de  jQuery  en  el  bloque <div  id=“main”><div>
     //Funciones JavaScript que insertan parametros recibidos en el codigo HTML que devuelven
@@ -32,7 +28,6 @@ const index = (quizzes) => quizzes.reduce((ac, quiz, id) =>
   + `<button class="new">  New Quiz</button>
      <button class="reset">Reset Quizzes</button>
      <button class="playAll"> Play All Quizzes</button>`;
-
 //Vista de un formulario con un quiz que renderiza playController(id),
 //la respuesta se envia al darle a check, que genera el evento check.
 const play = (id, question) =>
@@ -46,7 +41,6 @@ const play = (id, question) =>
     </p>
     <button class="index">Go back</button>
 `;
-
 const playAll = (id, question,score) =>
 `<p>
     You have ${score} points
@@ -54,7 +48,7 @@ const playAll = (id, question,score) =>
 +
 `   ${question}:
     <p>
-        <input  type="text" id="answer" placeholder="Answer" >
+        <input  type="text" id="answer" placeholder="Answer" />
         <button class="checkAll" quizid="${id}">Check</button>
     </p>
     <button class="index">Go back</button>
@@ -70,9 +64,7 @@ const quizForm = (msg, event, id, question, answer) =>
     </p>
     <button class="index">Go back</button>
 `;
-
    // CONTROLLERs
-
 //Renderiza la lista de los quizzes, junto con los botones para editar,
 //borrar, crear y resetear. Regenera el array a partir del almacenado en
 //formato JSON en localStorage.quizzes y renderizar la vista index(quizzes)
@@ -81,14 +73,12 @@ const indexController = () => {
     let quizzes = JSON.parse(localStorage.quizzes);
     $('#main').html(index(quizzes));
 };
-
 //Renderiza  el  formulario  para  jugar  con  el  quiz,  identificado  por id,
 //al  ocurrir  el evento play (clicar en el texto del quiz)
 const playController = (id) => {
     let { question } = JSON.parse(localStorage.quizzes)[id];
     $('#main').html(play(id, question));
 };
-
 //Comprueba  si  la  respuesta  enviada  es  correcta  al  ocurrir  el  evento
 //check(clicar en el botón Check)
 const checkController = (id) => {
@@ -99,14 +89,12 @@ const checkController = (id) => {
       : `No, "${my_answer}" is not the ${question}`;
     $('#msg').html(response);//Sustituye por response el innerHTML del elemento msg
 };
-
 //Renderiza  el  formulario  de  edición  de  un  quiz  al  ocurrir  el  evento edit  (clicar  el botón  Edit),
 //inicializando  los  cajetines  del  formulario  con  la  pregunta  y  la  respuesta  del  quiz identificado por id.
 const editController = (id) => {
     let {question, answer} = JSON.parse(localStorage.quizzes)[id];
     $('#main').html(quizForm('Edit Quiz', 'update', id, question, answer));
 };
-
 //Actualiza  el  modelo  con  las  nuevas  pregunta  y  respuesta  tecleadas  en  el quiz  identificado  por id,
 //  al  ocurrir  el  evento update(clicar  el  botón  update  en  vista  quizForm).
 //Finaliza renderizando la vista index
@@ -117,7 +105,6 @@ const updateController = (id) => {
     localStorage.quizzes = JSON.stringify(quizzes);
     indexController();
 };
-
 //Renderizar  el  formulario  de  creación  de  un  quiz  (vista quizForm(msg, event,  id,  question,  answer)).
 // Se  invoca  al  ocurrir  el  evento new  (clicar  el  botón  New_Quiz).
 //El parámetro id  se  puede  inicializar  a  0  o  a  cualquier  valor,
@@ -127,7 +114,6 @@ const updateController = (id) => {
 const newController = () => {
     $('#main').html(quizForm('New Quiz', 'create',0, "", ""));
 };
-
 //Actualizar  el  modelo  introduciendo  el  nuevo  quiz  al  final  del  array  de quizzes.
 //Se  invoca  al  ocurrir  el  evento create  (clicar  el  botón  create),
 //al  ocurrir  el  evento update(clicar el botón create en vista quizForm).
@@ -138,7 +124,6 @@ const createController = () => {
   localStorage.quizzes = JSON.stringify(quizzes);
   indexController();
 };
-
 //Actualizar  el  modelo  eliminando  el  quiz  identificado  for id  del  array  de quizzes.
 //Se  invoca  al  ocurrir  el  evento delete  (clicar  el  botón  Delete).
 //Antes  de  eliminarlo  debe pedir confirmación con el método confirm() de JavaScript de cliente,
@@ -152,7 +137,6 @@ const deleteController = (id) => {
     localStorage.quizzes = JSON.stringify(quizzes);
     indexController();
 };
-
 //Actualizar  el  modelo  con  los  quizzes  iniciales,  guardados  en  la  constante initial_quizzes.
 //Debe finalizar renderizando la vista index
 const resetController = () => {
@@ -162,7 +146,6 @@ const resetController = () => {
     }
     indexController();
 };
-
 const playAllController = () => {
   let playQuizzes = JSON.parse(localStorage.quizzes);
   let score = 0;
@@ -172,7 +155,7 @@ const playAllController = () => {
     checkAllController(questionId);
   });
   $('#main').html(playAll(questionId,question,score));
-
+  $('#answer').focus();
   const checkAllController = (id) => {
       let {question, answer} = playQuizzes[id];
       let my_answer = $('#answer').val();
@@ -193,7 +176,7 @@ const playAllController = () => {
         questionId = Math.floor(Math.random()*(playQuizzes.length));
         let { question } = playQuizzes[questionId];
         $('#main').html(response+playAll(questionId,question,score));
-
+        $('#answer').focus();
       }else{
         score = 0;
         let r = confirm("GAME OVER. Do you want to try again?");
@@ -205,10 +188,7 @@ const playAllController = () => {
       }
   };
 }
-
-
    // ROUTER
-
 //Asocia manejadores a eventos, de forma que su concurrencia invoque el controlador asociados
 //El navegador se asocia al evento click sobre cualquier elemento HTML de document(pagina mostrada)
 //el segundo parametro filtra los que pertenezccan a la clasex
@@ -235,9 +215,14 @@ const eventsController = ()=> {
   $(document).on('click','.playAll',  () => {
     playAllController();
   });
+  $(document).on('keyup','#answer',  (e) => {
+    let key = e.keyCode||e.which;
+    if(key===13){
+      $('.check').click();
+      $('.checkAll').click();
+    }
+  });
 }
-
-
 $(function(){
   indexController();
   eventsController();
